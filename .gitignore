@@ -1,0 +1,45 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environments & Virtualenvs
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
+
+# Databases, Cache & Large Datasets
+data/cache/
+data/chroma_db/
+data/benchmarks/duckdb_sample/
+test_excel.xlsx
+
+# LaTeX compilation intermediates (preserve .tex, .bib, .pdf, .md)
+latex files/*.aux
+latex files/*.log
+latex files/*.out
+latex files/*.toc
+latex files/*.synctex.gz
+latex files/*.fls
+latex files/*.fdb_latexmk
+
+# Editor, Office locks & OS files
+~$*
+*.tmp
+latex files/Literature_Review_Member_Assignments.xlsx
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+Desktop.ini

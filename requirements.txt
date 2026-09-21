@@ -1,0 +1,22 @@
+# --- Core Parsing & Slicing (Stage 1) ---
+tree-sitter>=0.21.3
+tree-sitter-c>=0.21.0
+tree-sitter-cpp>=0.21.0
+
+# --- Vector Database & Embeddings (Stage 2) ---
+chromadb>=0.4.24
+sentence-transformers>=2.6.1
+
+# --- Neuro-Symbolic LLM Triage & Grammar Schemas (Stage 3) ---
+pydantic>=2.6.4
+pydantic-core>=2.16.3
+
+# --- Evaluation & Utilities ---
+rich>=13.7.1
+click>=8.1.7
+tqdm>=4.66.2
+pyyaml>=6.0.1
+openpyxl>=3.1.2
+pytest>=8.0.0
+pytest-cov>=4.1.0
+flawfinder>=2.0.19
