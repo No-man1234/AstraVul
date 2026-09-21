@@ -41,7 +41,7 @@ def run_flawfinder_on_file(file_path: str) -> bool:
         return any(k in content for k in ("strcpy", "strcat", "sprintf", "free", "system", "gets"))
 
 
-def run_full_benchmark(manifest_path: str = "data/benchmarks/ground_truth.json") -> Dict[str, Any]:
+def run_full_benchmark(manifest_path: str = "data/benchmarks/ground_truth.json", model_path: str | None = None) -> Dict[str, Any]:
     """Executes head-to-head benchmarking against the ground-truth manifest."""
     manifest_file = Path(manifest_path)
     if not manifest_file.exists():
@@ -51,18 +51,20 @@ def run_full_benchmark(manifest_path: str = "data/benchmarks/ground_truth.json")
     with open(manifest_file, "r", encoding="utf-8") as f:
         test_cases: List[Dict[str, Any]] = json.load(f)
 
+    model_label = f"Local LLM ({Path(model_path).name})" if model_path else "Neuro-Symbolic Verifier"
     console.print(Panel.fit(
         f"[bold cyan]Automated Benchmark Evaluation[/bold cyan]\n"
         f"Evaluating [bold]{len(test_cases)}[/bold] paired test cases across:\n"
         f"• [green]NIST Juliet Test Suite v1.3 (Synthetic)[/green]\n"
         f"• [yellow]DiverseVul Dataset (Real-World CVEs)[/yellow]\n"
+        f"Engine: [magenta]{model_label}[/magenta]\n"
         f"Baselines: [bold]Flawfinder v2.0.20[/bold] vs. [bold green]AST-Guided RAG (Ours)[/bold green]",
         border_style="cyan"
     ))
 
     slicer = ASTSlicer()
     rag = RAGKnowledgeStore()
-    engine = LocalTriageEngine()
+    engine = LocalTriageEngine(model_path=model_path)
 
     detailed_results = []
     

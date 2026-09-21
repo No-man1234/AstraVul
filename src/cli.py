@@ -158,11 +158,12 @@ def index(full: bool, diversevul: str | None) -> None:
 @cli.command()
 @click.option("--benchmark-dir", type=click.Path(exists=True), default="examples", help="Directory of test samples.")
 @click.option("--full", is_flag=True, help="Execute full benchmark across NIST Juliet and DiverseVul test suites.")
-def evaluate(benchmark_dir: str, full: bool) -> None:
+@click.option("--model", "-m", type=click.Path(), default=None, help="Path to local GGUF model weights (optional).")
+def evaluate(benchmark_dir: str, full: bool, model: str | None) -> None:
     """Evaluates Precision, Recall, F1, and FDR on benchmark samples."""
     if full or Path("data/benchmarks/ground_truth.json").exists():
         from .evaluation.benchmark_runner import run_full_benchmark
-        run_full_benchmark("data/benchmarks/ground_truth.json")
+        run_full_benchmark("data/benchmarks/ground_truth.json", model_path=model)
     else:
         from .evaluation.metrics import evaluate_benchmark
         console.print(f"[cyan]Evaluating benchmarks in {benchmark_dir}...[/cyan]")
