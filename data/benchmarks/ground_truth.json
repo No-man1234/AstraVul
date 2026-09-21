@@ -1,0 +1,86 @@
+[
+  {
+    "file": "data/benchmarks/juliet/CWE121_Stack_Based_Buffer_Overflow__bad.c",
+    "dataset": "NIST Juliet v1.3",
+    "is_vulnerable": true,
+    "cwe_id": "CWE-121",
+    "description": "Unbounded strcpy of 40 bytes into 16-byte stack array"
+  },
+  {
+    "file": "data/benchmarks/juliet/CWE121_Stack_Based_Buffer_Overflow__good.c",
+    "dataset": "NIST Juliet v1.3",
+    "is_vulnerable": false,
+    "cwe_id": "CWE-121",
+    "description": "Safe strcpy protected by strlen < sizeof bounds check"
+  },
+  {
+    "file": "data/benchmarks/juliet/CWE122_Heap_Based_Buffer_Overflow__bad.c",
+    "dataset": "NIST Juliet v1.3",
+    "is_vulnerable": true,
+    "cwe_id": "CWE-122",
+    "description": "Unchecked copy of 64 bytes into 16-byte heap chunk"
+  },
+  {
+    "file": "data/benchmarks/juliet/CWE122_Heap_Based_Buffer_Overflow__good.c",
+    "dataset": "NIST Juliet v1.3",
+    "is_vulnerable": false,
+    "cwe_id": "CWE-122",
+    "description": "Safe heap copy bounded by allocation length"
+  },
+  {
+    "file": "data/benchmarks/juliet/CWE416_Use_After_Free__bad.c",
+    "dataset": "NIST Juliet v1.3",
+    "is_vulnerable": true,
+    "cwe_id": "CWE-416",
+    "description": "Heap array accessed after call to free()"
+  },
+  {
+    "file": "data/benchmarks/juliet/CWE416_Use_After_Free__good.c",
+    "dataset": "NIST Juliet v1.3",
+    "is_vulnerable": false,
+    "cwe_id": "CWE-416",
+    "description": "Pointer assigned to NULL immediately after free()"
+  },
+  {
+    "file": "data/benchmarks/juliet/CWE78_OS_Command_Injection__bad.c",
+    "dataset": "NIST Juliet v1.3",
+    "is_vulnerable": true,
+    "cwe_id": "CWE-78",
+    "description": "Unsanitized user string executed via system() call"
+  },
+  {
+    "file": "data/benchmarks/juliet/CWE78_OS_Command_Injection__good.c",
+    "dataset": "NIST Juliet v1.3",
+    "is_vulnerable": false,
+    "cwe_id": "CWE-78",
+    "description": "Hardcoded command string executed via system()"
+  },
+  {
+    "file": "data/benchmarks/diversevul/CVE_2021_3156_sudo_bad.c",
+    "dataset": "DiverseVul (Real-World)",
+    "is_vulnerable": true,
+    "cwe_id": "CWE-120",
+    "description": "Sudo Baron Samedit heap buffer overflow via unescaped string copy"
+  },
+  {
+    "file": "data/benchmarks/diversevul/CVE_2021_3156_sudo_good.c",
+    "dataset": "DiverseVul (Real-World)",
+    "is_vulnerable": false,
+    "cwe_id": "CWE-120",
+    "description": "Sudo Baron Samedit official security patch with length validation"
+  },
+  {
+    "file": "data/benchmarks/diversevul/CVE_2022_24975_git_bad.c",
+    "dataset": "DiverseVul (Real-World)",
+    "is_vulnerable": true,
+    "cwe_id": "CWE-416",
+    "description": "Libgit2 buffer struct pointer dereferenced after free()"
+  },
+  {
+    "file": "data/benchmarks/diversevul/CVE_2022_24975_git_good.c",
+    "dataset": "DiverseVul (Real-World)",
+    "is_vulnerable": false,
+    "cwe_id": "CWE-416",
+    "description": "Libgit2 official security patch setting freed pointer to NULL"
+  }
+]
