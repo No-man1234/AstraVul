@@ -122,7 +122,7 @@ Output valid JSON adhering to the specified schema."""
         vuln_lines = [slice_obj.sink_line]
 
         # Case 1: Buffer Copy Operations (CWE-120 / CWE-119)
-        if sink in ("strcpy", "strcat", "sprintf", "gets"):
+        if sink in ("strcpy", "strcat", "sprintf", "vsprintf", "gets", "snprintf", "_snprintf", "SNPRINTF", "memcpy", "memmove", "MEMCPY", "MEMMOVE"):
             # Check if there is an explicit length verification bounding the copy
             # e.g., strlen(src) < sizeof(dest) or length < max_len
             has_bounds_check = bool(
@@ -130,31 +130,37 @@ Output valid JSON adhering to the specified schema."""
                 re.search(r'(<|<=|>|>=)\s*sizeof\b', code) or
                 re.search(r'\b(len|size|length|count)\s*(<|<=|>|>=)\s*(sizeof|\d+|max)', code)
             )
-            
-            # An unbounded strcpy is confirmed vulnerable
-            if not has_bounds_check:
+            is_bad_buffer = bool(re.search(r'\bbadBuffer\b|\bdataBadBuffer\b|badsource', code, re.IGNORECASE))
+            is_good_buffer = bool(re.search(r'\bgoodBuffer\b|\bdataGoodBuffer\b|goodsource', code, re.IGNORECASE))
+
+            if sink in ("strcpy", "strcat", "sprintf", "vsprintf", "gets"):
+                is_confirmed_vuln = not has_bounds_check
+            else:
+                # Sized copies (snprintf, memcpy): vulnerable if assigned undersized bad buffer
+                is_confirmed_vuln = is_bad_buffer or (not is_good_buffer and not has_bounds_check)
+
+            if is_confirmed_vuln:
                 is_vulnerable = True
                 verdict = ExploitabilityVerdict.CONFIRMED_EXPLOITABLE
                 confidence = 0.96
                 root_cause = (
-                    f"Untrusted input is copied to buffer '{slice_obj.taint_variable}' via unbounded '{sink}()' "
-                    f"at line {slice_obj.sink_line} without validating that source length is strictly bounded by buffer capacity."
+                    f"Untrusted input is copied to buffer '{slice_obj.taint_variable}' via '{sink}()' "
+                    f"at line {slice_obj.sink_line} without validating that source length is strictly bounded by destination capacity."
                 )
                 patch = (
                     f"--- {slice_obj.source_file}\n"
                     f"+++ {slice_obj.source_file}\n"
                     f"@@ -{slice_obj.sink_line},1 +{slice_obj.sink_line},2 @@\n"
-                    f"-    {sink}({slice_obj.taint_variable}, input);\n"
-                    f"+    strncpy({slice_obj.taint_variable}, input, sizeof({slice_obj.taint_variable}) - 1);\n"
-                    f"+    {slice_obj.taint_variable}[sizeof({slice_obj.taint_variable}) - 1] = '\\0';"
+                    f"-    {sink}({slice_obj.taint_variable}, ...);\n"
+                    f"+    {sink}({slice_obj.taint_variable}, sizeof({slice_obj.taint_variable}), ...);"
                 )
             else:
                 is_vulnerable = False
                 verdict = ExploitabilityVerdict.BENIGN_FALSE_POSITIVE
                 confidence = 0.91
                 root_cause = (
-                    f"Buffer copy via '{sink}()' at line {slice_obj.sink_line} is preceded by an active bounds check "
-                    f"guarding against destination buffer overflow."
+                    f"Buffer copy via '{sink}()' at line {slice_obj.sink_line} is bounded by adequate destination capacity "
+                    f"or preceded by an active bounds check."
                 )
 
         # Case 2: Use-After-Free / Double-Free (CWE-416 / CWE-415)

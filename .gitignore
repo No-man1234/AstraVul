@@ -23,6 +23,8 @@ htmlcov/
 data/cache/
 data/chroma_db/
 data/benchmarks/duckdb_sample/
+data/benchmarks/juliet_cache/
+data/benchmarks/juliet_live/
 test_excel.xlsx
 
 # LaTeX compilation intermediates (preserve .tex, .bib, .pdf, .md)

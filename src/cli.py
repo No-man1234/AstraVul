@@ -170,5 +170,26 @@ def evaluate(benchmark_dir: str, full: bool, model: str | None) -> None:
         evaluate_benchmark(benchmark_dir)
 
 
+@cli.command("benchmark-juliet")
+@click.option("--count", "-n", type=int, default=10, help="Number of uncurated Juliet test files to evaluate.")
+@click.option("--cwe", default="CWE121", help="Target CWE category (e.g., CWE121, CWE122, CWE134).")
+@click.option("--local-dir", type=click.Path(exists=True), default=None, help="Path to local directory of raw Juliet testcase files.")
+@click.option("--model", "-m", type=click.Path(), default=None, help="Path to local GGUF model weights (optional).")
+def benchmark_juliet(count: int, cwe: str, local_dir: str | None, model: str | None) -> None:
+    """Executes live uncurated benchmarking on NIST Juliet Test Suite v1.3 test cases."""
+    from .evaluation.suite_tester import run_real_juliet_benchmark
+    run_real_juliet_benchmark(count=count, cwe=cwe, local_dir=local_dir, model_path=model)
+
+
+@cli.command("benchmark-diversevul")
+@click.option("--file", "-f", "json_path", type=click.Path(exists=True), required=True, help="Path to DiverseVul JSON / JSONL dataset.")
+@click.option("--samples", "-s", type=int, default=50, help="Number of raw functions to benchmark.")
+@click.option("--model", "-m", type=click.Path(), default=None, help="Path to local GGUF model weights (optional).")
+def benchmark_diversevul(json_path: str, samples: int, model: str | None) -> None:
+    """Executes live uncurated benchmarking on real-world DiverseVul commit functions."""
+    from .evaluation.suite_tester import run_diversevul_benchmark
+    run_diversevul_benchmark(json_path=json_path, samples=samples, model_path=model)
+
+
 if __name__ == "__main__":
     cli()
