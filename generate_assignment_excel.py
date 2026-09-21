@@ -230,7 +230,7 @@ def build_excel():
                 }
             ],
             "synthesis": "These papers revealed the harsh reality of LLM security: raw LLMs collapse on real-world code (PrimeVul), publish papers with flawed metrics (Chasing Shadows), and suffer from patch-blindness unless grounded by external RAG diffs (Vul-RAG). What was missing was an integrated, token-efficient, privacy-preserving system that combines RAG with compiler slicing under strict FDR evaluation.",
-            "alignment": "Directly justifies Stage 2 (ChromaDB RAG Knowledge Store) and our Evaluation Protocol. We adopt Vul-RAG's insight by indexing 969 official NIST CWE definitions and DiverseVul/CVEfixes patch diffs in ChromaDB to eliminate patch-blindness. We strictly adhere to Chasing Shadows by adopting False Discovery Rate (FDR) as our primary metric, achieving FDR = 0.0% on our benchmark suite (eliminating 100% of SAST false alarms)."
+            "alignment": "Directly justifies Stage 2 (ChromaDB RAG Knowledge Store) and our Evaluation Protocol. We adopt Vul-RAG's insight by indexing 969 official NIST CWE definitions and DiverseVul/CVEfixes patch diffs in ChromaDB to eliminate patch-blindness. We strictly adhere to Chasing Shadows by adopting False Discovery Rate (FDR) as our primary metric, achieving FDR = 0.0% across our pilot micro-benchmark (resolving all 4 Flawfinder false alarms on the evaluated pairs)."
         }
     ]
 

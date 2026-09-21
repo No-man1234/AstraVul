@@ -3,7 +3,7 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Security: Local-First](https://img.shields.io/badge/Privacy-100%25%20On--Premise-green.svg)](#privacy--security-first)
-[![Benchmarking: Juliet%20%26%20DiverseVul](https://img.shields.io/badge/Evaluation-Juliet%20%26%20DiverseVul-orange.svg)](#evaluation--benchmarks)
+[![Pilot Benchmark](https://img.shields.io/badge/Pilot%20Benchmark-N%3D12%20Paired%20Cases-orange.svg)](#evaluation-targets--baseline-benchmarking)
 
 ---
 
@@ -65,7 +65,7 @@ By deploying **Tree-sitter AST and Data-Flow Graph (DFG) slicing**, **contrastiv
 - **Contrastive RAG Knowledge Grounding (Stage 2):** Solves the LLM "patch-blindness" problem by indexing paired vulnerable-vs-patched commit diffs from **DiverseVul** and **CVEfixes** alongside formal structural rules from **NIST CWE Top 25**, providing the model with grounded operational invariants.
 - **100% Privacy-Preserving Inference (Stage 3):** Fully self-contained local deployment using 4-bit quantized open-weight code models (`Qwen2.5-Coder-7B-Instruct` or `DeepSeek-Coder-6.7B-Instruct`). No source code ever leaves the local network or workstation.
 - **Strict Constrained Grammar Decoding:** Replaces unreliable conversational prose with schema-enforced JSON generation via Pydantic v2, outputting deterministic exploitability verdicts, line-level locations, and actionable patch recommendations.
-- **Empirically Rigorous Metrics:** Specifically engineered to suppress False Discovery Rate ($\text{FDR} \le 20\%$) and verified against both synthetic ground truth (**NIST Juliet v1.3**) and wild open-source CVEs (**DiverseVul**).
+- **Empirically Rigorous Metrics:** Specifically engineered to suppress False Discovery Rate ($\text{FDR} \le 20\%$) and mechanism-validated via a controlled pilot micro-benchmark ($N=12$ paired test cases) spanning both synthetic ground truth (**NIST Juliet v1.3**) and wild open-source CVEs (**DiverseVul**).
 
 ---
 

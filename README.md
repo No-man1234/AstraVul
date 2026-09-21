@@ -5,8 +5,8 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Privacy: 100% On-Premise](https://img.shields.io/badge/Privacy-100%25%20Air--Gapped-green.svg)](#privacy--local-first)
-[![FDR: 0.0%](https://img.shields.io/badge/False%20Discovery%20Rate-0.0%25-brightgreen.svg)](#empirical-evaluation)
-[![Benchmark: NIST Juliet & DiverseVul](https://img.shields.io/badge/Evaluation-Juliet%20%26%20DiverseVul-orange.svg)](#empirical-evaluation)
+[![Status: Research Prototype](https://img.shields.io/badge/Status-Research%20Prototype-blue.svg)](#pilot-evaluation)
+[![Pilot Suite: N=12](https://img.shields.io/badge/Pilot%20Benchmark-N%3D12%20Paired%20Cases-orange.svg)](#pilot-evaluation)
 
 ---
 
@@ -56,29 +56,38 @@ AstraVul bridges compiler analysis and generative AI through a decoupled three-s
                                      ▼
        ┌───────────────────────────────────────────────────────────┐
        │             Structured JSON Security Triage Report        │
-       │  (FDR = 0.0%, Line Locations, Exploitability & Patch Diff)│
+       │  (Line Diagnostics, Exploitability Verdict & Patch Diff)  │
        └───────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Empirical Evaluation
+## Pilot Mechanism Evaluation (N=12 Paired Cases)
 
-Benchmarked against standard SAST baseline (**Flawfinder v2.0.20**) across 12 paired test cases from the **NIST Juliet Test Suite v1.3** and real-world CVEs from **DiverseVul** (CVE-2021-3156 Sudo Heap Overflow, CVE-2022-24975 Libgit2 Use-After-Free):
+To empirically evaluate the core mechanisms of AstraVul—specifically whether AST slicing captures sanitization bounds guards and pointer tracking that blind regex-based SAST—we constructed a controlled pilot micro-benchmark of **12 paired C test cases** (6 vulnerable vs. safe pairs) sampled from the **NIST Juliet Test Suite v1.3** and real-world CVEs from **DiverseVul**:
 
-| Benchmark Suite | Evaluated Tool | Precision | Recall | F1-Score | False Discovery Rate (FDR) |
+### Micro-Benchmark Manifest:
+* **NIST Juliet Subset ($n=8$):** 4 paired cases covering Stack Buffer Overflow (CWE-121), Heap Buffer Overflow (CWE-122), Use-After-Free (CWE-416), and OS Command Injection (CWE-78).
+* **DiverseVul Subset ($n=4$):** 2 real-world CVE commit pairs covering Sudo Baron Samedit (CVE-2021-3156, Heap Overflow) and Libgit2 (CVE-2022-24975, Buffer Use-After-Free).
+
+### Head-to-Head Results (Flawfinder Baseline vs. AstraVul):
+
+| Evaluated Suite | Tool | Precision | Recall | F1-Score | False Discovery Rate (FDR) |
 | :--- | :--- | :---: | :---: | :---: | :---: |
-| **NIST Juliet v1.3** | Flawfinder (SAST) | 50.0% | 75.0% | 60.0% | 50.0% |
-| **NIST Juliet v1.3** | **AstraVul (Ours)** | **100.0%** | **100.0%** | **100.0%** | **0.0%** |
-| **DiverseVul (Real-World)** | Flawfinder (SAST) | 50.0% | 50.0% | 50.0% | 50.0% |
-| **DiverseVul (Real-World)** | **AstraVul (Ours)** | **100.0%** | **100.0%** | **100.0%** | **0.0%** |
-| **Overall Combined** | Flawfinder (SAST) | 50.0% | 66.7% | 57.1% | 50.0% |
-| **Overall Combined** | **AstraVul (Ours)** | **100.0%** | **100.0%** | **100.0%** | **0.0%** |
+| **Juliet Micro-Suite** ($n=8$) | Flawfinder (SAST) | 50.0% | 75.0% | 60.0% | 50.0% |
+| **Juliet Micro-Suite** ($n=8$) | **AstraVul (Ours)** | **100.0%** | **100.0%** | **100.0%** | **0.0%** |
+| **DiverseVul Micro-Suite** ($n=4$) | Flawfinder (SAST) | 50.0% | 50.0% | 50.0% | 50.0% |
+| **DiverseVul Micro-Suite** ($n=4$) | **AstraVul (Ours)** | **100.0%** | **100.0%** | **100.0%** | **0.0%** |
+| **Pilot Suite Combined** ($N=12$) | Flawfinder (SAST) | 50.0% | 66.7% | 57.1% | 50.0% |
+| **Pilot Suite Combined** ($N=12$) | **AstraVul (Ours)** | **100.0%** | **100.0%** | **100.0%** | **0.0%** |
 
-### Key Empirical Findings:
-1. **100% False Positive Elimination:** Flawfinder misflagged 100% of safe, bounds-checked test cases (50% FDR). AstraVul's AST slicer captured the enclosing bounds checks (`strlen(src) < sizeof(dest)`), achieving **$\text{FDR} = 0.0\%$**.
-2. **Detection of Subtle Use-After-Free:** Flawfinder missed pointer lifecycle bugs (Juliet CWE-416 and Libgit2 CVE-2022-24975). AstraVul traced the dereference post-`free()` and correctly flagged them.
-3. **Context Reduction:** Pruned raw function tokens down to concise 535--718 token prompts without loss of taint paths.
+### Mechanistic Analysis:
+1. **Sanitizer & Bounds Guard Awareness:** Flawfinder misflagged all 4 safe, bounds-checked instances because it triggers alerts purely on API sink tokens (e.g., `strcpy`). AstraVul's backward slicing successfully captured the enclosing control guard (`strlen(src) < sizeof(dest)`), correctly clearing all 4 false positives in this micro-suite.
+2. **Pointer Lifecycle (UAF) Tracking:** Flawfinder missed pointer lifecycle bugs (Juliet CWE-416 and Libgit2 CVE-2022-24975) because `free()` does not match standard dangerous-function lists. AstraVul traced the deallocation along the dataflow graph to identify post-free dereferences.
+3. **Context Reduction:** Pruned raw function tokens down to concise 535--718 token prompts (a 36.0%--70.0% compression), reducing prompt overhead without eliminating critical taint paths.
+
+> [!NOTE]
+> **Scope & Threats to Validity:** This micro-benchmark serves as a **proof-of-mechanism** to demonstrate that AST slicing and RAG grounding correctly address specific failure modes where regex SAST fails. It does **not** constitute an evaluation across the entirety of NIST Juliet (~64,000 cases) or the complete DiverseVul dataset (~330,000 functions). Measuring macro-scale generalization, noise tolerance, and throughput across large-scale software repositories is part of our ongoing research agenda.
 
 ---
 

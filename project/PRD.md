@@ -90,20 +90,22 @@ Software security testing currently suffers from a crippling trade-off: traditio
 
 ---
 
-## 6. Empirical Validation & Benchmark Performance
+## 6. Pilot Mechanism Evaluation ($N=12$ Paired Cases)
 
-Empirically evaluated against standard static analyzer **Flawfinder v2.0.20** across 12 paired ground-truth test cases in **NIST Juliet v1.3** and **DiverseVul** (Real-World CVEs):
+To empirically validate the foundational mechanisms of AstraVul—specifically whether AST slicing correctly captures guard conditions and pointer lifecycles that blind regex-based SAST—we evaluated AstraVul against static analyzer **Flawfinder v2.0.20** on a controlled pilot micro-benchmark of **12 paired ground-truth test cases** (6 vulnerable vs. safe pairs) sampled from **NIST Juliet v1.3** ($n=8$) and **DiverseVul** real-world CVEs ($n=4$):
 
-| Target Metric | Baseline (Flawfinder SAST) | AST-Guided RAG Target | **AST-Guided RAG (Achieved)** |
-| :--- | :---: | :---: | :---: |
-| **Precision (Juliet v1.3)** | 50.0% | $\ge 85.0\%$ | **100.0%** |
-| **Recall (Juliet v1.3)** | 75.0% | $\ge 82.0\%$ | **100.0%** |
-| **F1-Score (Juliet v1.3)** | 60.0% | $\ge 83.5\%$ | **100.0%** |
-| **False Discovery Rate (FDR)** | 50.0% | $\le 18.0\%$ | **0.0%** *(100% false alarms eliminated)* |
-| **DiverseVul Precision (Real-World CVEs)** | 50.0% | $\ge 72.0\%$ | **100.0%** |
-| **DiverseVul Recall (Real-World CVEs)** | 50.0% | $\ge 70.0\%$ | **100.0%** |
-| **Overall Combined F1-Score** | 57.1% | $\ge 80.0\%$ | **100.0%** |
-| **Prompt Token Reduction** | Reference (0%) | $\ge 70.0\%$ | **36.0% -- 70.0%+** |
+| Evaluation Subset | System / Tool | Precision | Recall | F1-Score | False Discovery Rate (FDR) |
+| :--- | :--- | :---: | :---: | :---: | :---: |
+| **Juliet Pilot Subset** ($n=8$) | Flawfinder (SAST Baseline) | 50.0% | 75.0% | 60.0% | 50.0% |
+| **Juliet Pilot Subset** ($n=8$) | **AstraVul (Ours)** | **100.0%** | **100.0%** | **100.0%** | **0.0%** |
+| **DiverseVul Pilot Subset** ($n=4$) | Flawfinder (SAST Baseline) | 50.0% | 50.0% | 50.0% | 50.0% |
+| **DiverseVul Pilot Subset** ($n=4$) | **AstraVul (Ours)** | **100.0%** | **100.0%** | **100.0%** | **0.0%** |
+| **Combined Micro-Suite** ($N=12$) | Flawfinder (SAST Baseline) | 50.0% | 66.7% | 57.1% | 50.0% |
+| **Combined Micro-Suite** ($N=12$) | **AstraVul (Ours)** | **100.0%** | **100.0%** | **100.0%** | **0.0%** |
+
+*Prompt Token Overhead Reduction: 36.0% to 70.0%+ compared to raw file queries.*
+
+> **Scope & Threats to Validity:** This evaluation is strictly a **pilot proof-of-mechanism micro-benchmark** ($N=12$). It validates that AST slicing and RAG grounding correctly resolve specific semantic failure modes (sanitization guard awareness, UAF pointer lifecycles) where lexical SAST produces false alarms or misses. It does **not** constitute an evaluation across the entirety of NIST Juliet (~64,000 cases) or the complete DiverseVul dataset (~330,000 functions). Measuring macro-scale generalization, noise tolerance, and throughput across large-scale software repositories represents ongoing research.
 
 ---
 
