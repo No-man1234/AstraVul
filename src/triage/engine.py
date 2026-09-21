@@ -147,13 +147,23 @@ Output valid JSON adhering to the specified schema."""
                     f"Untrusted input is copied to buffer '{slice_obj.taint_variable}' via '{sink}()' "
                     f"at line {slice_obj.sink_line} without validating that source length is strictly bounded by destination capacity."
                 )
-                patch = (
-                    f"--- {slice_obj.source_file}\n"
-                    f"+++ {slice_obj.source_file}\n"
-                    f"@@ -{slice_obj.sink_line},1 +{slice_obj.sink_line},2 @@\n"
-                    f"-    {sink}({slice_obj.taint_variable}, ...);\n"
-                    f"+    {sink}({slice_obj.taint_variable}, sizeof({slice_obj.taint_variable}), ...);"
-                )
+                if sink in ("strcpy", "strcat"):
+                    patch = (
+                        f"--- {slice_obj.source_file}\n"
+                        f"+++ {slice_obj.source_file}\n"
+                        f"@@ -{slice_obj.sink_line},1 +{slice_obj.sink_line},2 @@\n"
+                        f"-    {sink}({slice_obj.taint_variable}, input);\n"
+                        f"+    strncpy({slice_obj.taint_variable}, input, sizeof({slice_obj.taint_variable}) - 1);\n"
+                        f"+    {slice_obj.taint_variable}[sizeof({slice_obj.taint_variable}) - 1] = '\\0';"
+                    )
+                else:
+                    patch = (
+                        f"--- {slice_obj.source_file}\n"
+                        f"+++ {slice_obj.source_file}\n"
+                        f"@@ -{slice_obj.sink_line},1 +{slice_obj.sink_line},2 @@\n"
+                        f"-    {sink}({slice_obj.taint_variable}, ...);\n"
+                        f"+    {sink}({slice_obj.taint_variable}, sizeof({slice_obj.taint_variable}), ...);"
+                    )
             else:
                 is_vulnerable = False
                 verdict = ExploitabilityVerdict.BENIGN_FALSE_POSITIVE

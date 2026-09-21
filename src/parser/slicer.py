@@ -196,6 +196,9 @@ class ASTSlicer:
             # 1. Backward Dataflow: Look for definitions, input sources, or mutations of clean_var
             for line_idx in range(func_start_line, sink_line):
                 line_content = lines[line_idx - 1] if line_idx - 1 < len(lines) else ""
+                stripped = line_content.strip()
+                if stripped.startswith("//") or stripped.startswith("/*") or stripped.startswith("*"):
+                    continue
                 
                 # Check if line defines or mutates taint_var
                 if clean_var and re.search(r'\b' + re.escape(clean_var) + r'\b', line_content):
@@ -219,6 +222,9 @@ class ASTSlicer:
             if sink_name == "free" and clean_var:
                 for line_idx in range(sink_line + 1, min(func_end_line + 1, sink_line + 10)):
                     line_content = lines[line_idx - 1] if line_idx - 1 < len(lines) else ""
+                    stripped = line_content.strip()
+                    if stripped.startswith("//") or stripped.startswith("/*") or stripped.startswith("*"):
+                        continue
                     if re.search(r'\b' + re.escape(clean_var) + r'\b', line_content):
                         selected_line_numbers.add(line_idx)
 
@@ -238,6 +244,11 @@ class ASTSlicer:
             essential = {sorted_lines[0], sink_line}
             if len(sorted_lines) > 2:
                 essential.add(sorted_lines[1])
+            # For free sinks, always keep any subsequent dereferences
+            if sink_name == "free":
+                for l in sorted_lines:
+                    if l > sink_line:
+                        essential.add(l)
             sorted_lines = sorted(list(essential))
             assembled_lines = [f"{l_num}: {lines[l_num - 1].strip()}" for l_num in sorted_lines]
             slice_text = "\n".join(assembled_lines)

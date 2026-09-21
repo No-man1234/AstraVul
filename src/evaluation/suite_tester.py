@@ -110,8 +110,12 @@ def run_real_juliet_benchmark(
         "CWE121": "CWE121_Stack_Based_Buffer_Overflow/s04",
         "CWE122": "CWE122_Heap_Based_Buffer_Overflow/s01",
         "CWE134": "CWE134_Uncontrolled_Format_String/s01",
+        "CWE78": "CWE78_OS_Command_Injection/s01",
+        "CWE416": "CWE416_Use_After_Free",
+        "CWE415": "CWE415_Double_Free/s01",
+        "CWE23": "CWE23_Relative_Path_Traversal/s01",
     }
-    cwe_target = cwe_map.get(cwe.upper(), "CWE121_Stack_Based_Buffer_Overflow/s04")
+    cwe_target = cwe_map.get(cwe.upper(), f"{cwe.upper()}/s01")
 
     console.print(Panel.fit(
         f"[bold cyan]NIST Juliet v1.3 Real-World Benchmark Runner[/bold cyan]\n"
