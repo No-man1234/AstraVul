@@ -32,6 +32,15 @@ def cli() -> None:
     pass
 
 
+@cli.command("slice")
+@click.argument("target", type=click.Path(exists=True))
+def slice_cmd(target: str) -> None:
+    """Extracts and displays AST & data-flow slices for a C/C++ file."""
+    for s in ASTSlicer().slice_file(target):
+        console.print(f"\n[bold green]Slice Extracted:[/bold green] {s.slice_id} ({s.slice_tokens} tokens, {s.cwe_candidate})")
+        console.print(Syntax(s.slice_code, "c", line_numbers=False))
+
+
 @cli.command()
 @click.argument("target", type=click.Path(exists=True))
 @click.option("--output", "-o", type=click.Path(), default=None, help="Save JSON report to file.")
