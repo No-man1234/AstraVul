@@ -16,6 +16,9 @@ void safe_process_user_packet(const char *network_input) {
 int main(int argc, char **argv) {
     if (argc > 1) {
         safe_process_user_packet(argv[1]);
+    } else {
+        safe_process_user_packet("Valid_Packet_Payload");
+        safe_process_user_packet("012345678901234567890123456789012345");
     }
     return 0;
 }

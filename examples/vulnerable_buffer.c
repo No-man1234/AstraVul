@@ -10,8 +10,8 @@ void process_user_packet(const char *network_input) {
 }
 
 int main(int argc, char **argv) {
-    if (argc > 1) {
-        process_user_packet(argv[1]);
-    }
+    const char *default_packet = "012345678901234567890123456789012345";
+    const char *input = (argc > 1) ? argv[1] : default_packet;
+    process_user_packet(input);
     return 0;
 }

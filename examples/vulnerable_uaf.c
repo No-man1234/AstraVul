@@ -16,7 +16,10 @@ void handle_session_cleanup(Session *sess) {
 int main() {
     Session *s = (Session *)malloc(sizeof(Session));
     if (s) {
+        s->privileges = 1;
+        puts("Session allocated (privileges = 1). Running vulnerable cleanup...");
         handle_session_cleanup(s);
+        puts("Vulnerable cleanup complete (dereferenced freed session pointer).");
     }
     return 0;
 }

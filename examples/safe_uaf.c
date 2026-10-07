@@ -17,7 +17,10 @@ void safe_session_cleanup(Session **sess_ptr) {
 int main() {
     Session *s = (Session *)malloc(sizeof(Session));
     if (s) {
+        s->privileges = 1;
+        puts("Session allocated (privileges = 1). Running safe cleanup...");
         safe_session_cleanup(&s);
+        puts("Safe cleanup complete (session pointer cleared to NULL).");
     }
     return 0;
 }
