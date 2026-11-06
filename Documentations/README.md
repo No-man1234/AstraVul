@@ -72,15 +72,14 @@ By deploying **Tree-sitter AST and Data-Flow Graph (DFG) slicing**, **contrastiv
 ## Project Structure
 
 ```
-project/
-├── README.md               # Project overview, quickstart, and system blueprint
+Documentations/
+├── README.md               # Documentation overview, quickstart, and system blueprint
 ├── PRD.md                  # Product Requirements Document (Goals, Personas, Features)
 ├── ARCHITECTURE.md         # Detailed end-to-end technical system architecture
 ├── REQUIREMENTS.md         # Hardware, software, and dependency specifications
 ├── DATABASE.md             # Vector store schemas, metadata, and indexing strategies
 ├── API.md                  # CLI interface, REST endpoints, and schema definitions
 ├── DEVELOPMENT.md          # Setup guide, workflows, testing, and baseline reproduction
-├── AI_INSTRUCTIONS.md      # AI Agent operational guidelines & system prompts
 └── TASKS.md                # Phased development roadmap, milestones, and deliverables
 ```
 

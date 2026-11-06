@@ -106,8 +106,9 @@ AstraVul/
 │   │   ├── schemas.py
 │   │   └── engine.py
 │   └── evaluation/                              # Evaluation Framework & Benchmark Runners
-│       ├── metrics.py
-│       └── benchmark_runner.py
+│       ├── metrics.py                           # Precision, Recall, F1, FDR calculation
+│       ├── benchmark_runner.py                  # Controlled pilot micro-benchmark runner
+│       └── suite_tester.py                      # Live uncurated Juliet & DiverseVul runner
 ├── data/                                        # Benchmark datasets
 │   └── benchmarks/
 │       ├── ground_truth.json                    # Ground-truth labels & metadata
@@ -118,7 +119,7 @@ AstraVul/
 │   ├── test_rag.py
 │   ├── test_chroma_rag.py
 │   └── test_triage.py
-├── examples/                                    # C/C++ vulnerability test cases
+├── examples/                                    # Standalone runnable C/C++ vulnerability test cases
 │   ├── format_string_demo.c
 │   ├── path_traversal_demo.c
 │   ├── safe_buffer.c
@@ -126,18 +127,7 @@ AstraVul/
 │   ├── vulnerable_buffer.c
 │   ├── vulnerable_cmd.c
 │   └── vulnerable_uaf.c
-├── latex files/                                 # Academic papers and taxonomy
-│   ├── conference_paper.tex                     # 3-page IEEE format conference paper
-│   ├── conference_paper.pdf                     # Compiled conference paper PDF
-│   ├── literature_review.tex                    # 3-page literature review paper
-│   ├── literature_review.pdf                    # Compiled literature review PDF
-│   ├── taxonomy_table.tex                       # 1-page landscape printable taxonomy table
-│   ├── taxonomy_table.pdf                       # Compiled taxonomy PDF
-│   ├── references.bib                           # 15 seminal Q1 paper citations
-│   └── member_paper_assignments.md              # 5-member reading guide
-├── project/                                     # System specifications (PRD, Architecture)
-├── Literature_Review_Member_Assignments.xlsx   # 7-sheet Times New Roman assignment workbook
-├── generate_assignment_excel.py                 # Assignment workbook generation script
+├── Documentations/                              # System specifications (PRD, Architecture, API, Roadmap)
 ├── requirements.txt                             # Python dependencies
 └── pytest.ini                                   # Pytest configuration
 ```
@@ -154,26 +144,49 @@ pip install -r requirements.txt
 ```
 
 ### 2. Run AST Program Slicing
+Extract and display minimal AST and data-flow slices for any C/C++ target:
 ```bash
 python -m src.cli slice examples/vulnerable_buffer.c
 ```
 
 ### 3. Ingest Knowledge into ChromaDB
+Index the MITRE CWE taxonomy and contrastive CVE patch diffs into the persistent vector database:
 ```bash
+python -m src.cli index --full
+# Or directly:
 python -m src.rag.ingest
 ```
 
 ### 4. Run Automated Triage
+Analyze target code with neuro-symbolic triage and generate structured reports and remediation diffs:
 ```bash
+# Formatted summary table with patch diffs
 python -m src.cli scan examples/vulnerable_buffer.c
+
+# Detailed slice trace with custom local GGUF model weights (optional)
+python -m src.cli scan examples/vulnerable_buffer.c --verbose --model path/to/model.gguf
+
+# Output JSON report directly to file
+python -m src.cli scan examples/vulnerable_buffer.c --format json --output report.json
 ```
 
-### 5. Reproduce Empirical Benchmark (AstraVul vs. Flawfinder)
+### 5. Reproduce Controlled Benchmark (AstraVul vs. Flawfinder)
+Run the automated $N=12$ paired micro-benchmark:
 ```bash
 python -m src.cli evaluate
 ```
 
-### 6. Run Test Suite
+### 6. Live Uncurated Suite Benchmarking
+Execute live evaluations across uncurated NIST Juliet v1.3 test cases or DiverseVul commits:
+```bash
+# Benchmark on NIST Juliet v1.3 by CWE category (e.g., CWE121, CWE122, CWE134, CWE78, CWE416)
+python -m src.cli benchmark-juliet --count 10 --cwe CWE121
+
+# Benchmark on DiverseVul real-world commits (JSON/JSONL export)
+python -m src.cli benchmark-diversevul --file path/to/diversevul.json --samples 50
+```
+
+### 7. Run Test Suite
 ```bash
 pytest
 ```

@@ -27,14 +27,17 @@ data/benchmarks/juliet_cache/
 data/benchmarks/juliet_live/
 test_excel.xlsx
 
-# LaTeX compilation intermediates (preserve .tex, .bib, .pdf, .md)
-latex files/*.aux
-latex files/*.log
-latex files/*.out
-latex files/*.toc
-latex files/*.synctex.gz
-latex files/*.fls
-latex files/*.fdb_latexmk
+# Compiled binaries, archives & executables
+*.exe
+*.zip
+*.dll
+*.dylib
+
+# Local Agent & Workspace configuration
+.agents/
+
+# LaTeX compilation & local artifacts
+latex files/
 
 # Editor, Office locks & OS files
 ~$*
